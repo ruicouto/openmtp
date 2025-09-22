@@ -64,6 +64,13 @@ export const styles = (theme) => {
         background: `#f9f9f952`,
       },
     },
+    activeNavBtns: {
+      backgroundColor: `${theme.palette.primary.main} !important`,
+      color: `${theme.palette.primary.contrastText} !important`,
+      [`& .MuiSvgIcon-root`]: {
+        color: `${theme.palette.primary.contrastText} !important`,
+      },
+    },
     focussedFileExplorer: {
       width: '100%',
       height: 5,

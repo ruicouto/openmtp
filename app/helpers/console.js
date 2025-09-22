@@ -1,4 +1,4 @@
-import clp from 'console-log-plus';
+// import clp from 'console-log-plus'; // Temporarily disabled due to Node.js compatibility issues
 import { ENV_FLAVOR } from '../constants/env';
 
 const { warn } = console;
@@ -22,8 +22,5 @@ function logWarning(...warnings) {
 if (ENV_FLAVOR.disableReactWarnings) {
   console.warn = logWarning;
 
-  clp({
-    color: 'orange',
-    message: `Warning: React depreciation warnings are disabled.\n Edit 'app/helpers/console.js' to enable them`,
-  });
+  console.warn(`Warning: React depreciation warnings are disabled.\n Edit 'app/helpers/console.js' to enable them`);
 }

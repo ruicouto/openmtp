@@ -6,6 +6,8 @@ import {
   faPlug,
   faArrowLeft,
   faQuestionCircle,
+  faList,
+  faTh,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub, faPaypal } from '@fortawesome/free-brands-svg-icons';
 import { actionTypes } from './actions';
@@ -81,6 +83,16 @@ export const initialState = {
         label: 'Delete',
         icon: faTrashAlt,
       },
+      viewList: {
+        enabled: true,
+        label: 'List View',
+        icon: faList,
+      },
+      viewGrid: {
+        enabled: true,
+        label: 'Grid View',
+        icon: faTh,
+      },
       gitHub: {
         enabled: true,
         label: 'GitHub',
@@ -112,6 +124,16 @@ export const initialState = {
         enabled: true,
         label: 'Delete',
         icon: faTrashAlt,
+      },
+      viewList: {
+        enabled: true,
+        label: 'List View',
+        icon: faList,
+      },
+      viewGrid: {
+        enabled: true,
+        label: 'Grid View',
+        icon: faTh,
       },
       storage: {
         enabled: true,

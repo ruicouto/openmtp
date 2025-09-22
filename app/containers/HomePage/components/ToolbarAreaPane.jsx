@@ -32,19 +32,20 @@ import {
   makeHideHiddenFiles,
   makeMtpMode,
   makeShowLocalPaneOnLeftSide,
+  makeFileExplorerListingType,
 } from '../../Settings/selectors';
 import {
   BUY_ME_A_COFFEE_URL,
   DEVICES_DEFAULT_PATH,
   SUPPORT_PAYPAL_URL,
 } from '../../../constants';
-import { selectMtpMode, toggleSettings } from '../../Settings/actions';
+import { selectMtpMode, toggleSettings, fileExplorerListingType } from '../../Settings/actions';
 import { toggleWindowSizeOnDoubleClick } from '../../../helpers/titlebarDoubleClick';
 import ToolbarBody from './ToolbarBody';
 import { openExternalUrl } from '../../../utils/url';
 import { APP_GITHUB_URL } from '../../../constants/meta';
 import { pathUp } from '../../../utils/files';
-import { DEVICE_TYPE } from '../../../enums';
+import { DEVICE_TYPE, FILE_EXPLORER_VIEW_TYPE } from '../../../enums';
 import { log } from '../../../utils/log';
 import fileExplorerController from '../../../data/file-explorer/controllers/FileExplorerController';
 import { checkIf } from '../../../utils/checkIf';
@@ -316,6 +317,24 @@ class ToolbarAreaPane extends PureComponent {
 
         break;
 
+      case 'viewList':
+        this._handleViewToggle(FILE_EXPLORER_VIEW_TYPE.list);
+
+        analyticsService.sendEvent(
+          EVENT_TYPE[`${deviceTypeUpperCase}_${actionOrigin}_VIEW_LIST`],
+          {}
+        );
+        break;
+
+      case 'viewGrid':
+        this._handleViewToggle(FILE_EXPLORER_VIEW_TYPE.grid);
+
+        analyticsService.sendEvent(
+          EVENT_TYPE[`${deviceTypeUpperCase}_${actionOrigin}_VIEW_GRID`],
+          {}
+        );
+        break;
+
       default:
         break;
     }
@@ -362,6 +381,12 @@ class ToolbarAreaPane extends PureComponent {
     analyticsService.sendEvent(EVENT_TYPE.LOCAL_TOOLBAR_FAQS, {});
   };
 
+  _handleViewToggle = (viewType) => {
+    const { actionCreateFileExplorerListingType, deviceType } = this.props;
+
+    actionCreateFileExplorerListingType({ value: viewType }, deviceType);
+  };
+
   render() {
     const {
       classes: styles,
@@ -397,6 +422,7 @@ class ToolbarAreaPane extends PureComponent {
           appThemeMode={appThemeMode}
           showLocalPaneOnLeftSide={showLocalPaneOnLeftSide}
           mtpMode={mtpMode}
+          fileExplorerListingType={fileExplorerListingType}
           onDeleteConfirmDialog={this._handleDeleteConfirmDialog}
           onMtpStoragesListClick={this._handleMtpStoragesListClick}
           onMtpModeSelectionDialogClick={
@@ -571,6 +597,11 @@ const mapDispatchToProps = (dispatch, _) =>
       actionCreateToggleSettings: (data) => (_, __) => {
         dispatch(toggleSettings(data));
       },
+      actionCreateFileExplorerListingType:
+        ({ ...data }, deviceType) =>
+        (_, getState) => {
+          dispatch(fileExplorerListingType({ ...data }, deviceType, getState));
+        },
     },
     dispatch
   );
@@ -588,6 +619,7 @@ const mapStateToProps = (state, __) => {
     appThemeMode: makeAppThemeMode(state),
     mtpMode: makeMtpMode(state),
     showLocalPaneOnLeftSide: makeShowLocalPaneOnLeftSide(state),
+    fileExplorerListingType: makeFileExplorerListingType(state),
   };
 };
 

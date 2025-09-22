@@ -19,7 +19,7 @@ import {
   Confirm as ConfirmDialog,
   Selection as SelectionDialog,
 } from '../../../components/DialogBox';
-import { DEVICE_TYPE, MTP_MODE } from '../../../enums';
+import { DEVICE_TYPE, MTP_MODE, FILE_EXPLORER_VIEW_TYPE } from '../../../enums';
 import { capitalize, isEmpty } from '../../../utils/funcs';
 import { imgsrc } from '../../../utils/imgsrc';
 import { isKalamModeSupported } from '../../../helpers/binaries';
@@ -34,6 +34,7 @@ export default class ToolbarAreaPane extends PureComponent {
       mtpStoragesList,
       mtpDevice,
       mtpMode,
+      fileExplorerListingType,
     } = args;
 
     const _directoryLists = directoryLists[deviceType];
@@ -94,6 +95,23 @@ export default class ToolbarAreaPane extends PureComponent {
             ...item,
           };
           break;
+
+        case 'viewList':
+          _activeToolbarList[a] = {
+            ...item,
+            enabled,
+            active: fileExplorerListingType[deviceType] === 'list',
+          };
+          break;
+
+        case 'viewGrid':
+          _activeToolbarList[a] = {
+            ...item,
+            enabled,
+            active: fileExplorerListingType[deviceType] === 'grid',
+          };
+          break;
+
         default:
           break;
       }
@@ -130,6 +148,7 @@ export default class ToolbarAreaPane extends PureComponent {
       onToolbarAction,
       showLocalPaneOnLeftSide,
       mtpMode,
+      fileExplorerListingType,
     } = this.props;
 
     const _toolbarList = this.activeToolbarList({
@@ -140,6 +159,7 @@ export default class ToolbarAreaPane extends PureComponent {
       mtpStoragesList,
       mtpDevice,
       mtpMode,
+      fileExplorerListingType,
     });
 
     const RenderLazyLoaderOverlay = LazyLoaderOverlay({ appThemeMode });
@@ -259,6 +279,7 @@ export default class ToolbarAreaPane extends PureComponent {
                           [styles.disabledNavBtns]: !item.enabled,
                           [styles.invertedNavBtns]: item.invert,
                           [styles.imageBtn]: item.image,
+                          [styles.activeNavBtns]: item.active,
                         })}
                       >
                         {item.image && (
