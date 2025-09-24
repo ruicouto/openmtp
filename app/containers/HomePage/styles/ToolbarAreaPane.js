@@ -78,6 +78,25 @@ export const styles = (theme) => {
       overflow: 'hidden',
       background: 'rgba(0, 176, 255, 0.22)',
     },
+    folderNameWrapper: {
+      marginLeft: '8px',
+      marginRight: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      ...mixins({ theme }).noselect,
+    },
+    folderName: {
+      fontSize: '13px',
+      fontWeight: '600',
+      color: theme.palette.text.primary,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      letterSpacing: '-0.01em',
+      maxWidth: '180px',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+
   };
 };
 

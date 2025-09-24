@@ -12,6 +12,7 @@ import {
   makeShowLocalPane,
   makeShowLocalPaneOnLeftSide,
 } from '../Settings/selectors';
+import SidebarShortcuts from './components/SidebarShortcuts';
 
 class Home extends PureComponent {
   RenderLocalPane = () => {
@@ -68,7 +69,14 @@ class Home extends PureComponent {
       <Fragment>
         <Onboarding />
         <div className={styles.root}>
-          <div className={styles.grid}>{panes}</div>
+          <div className={styles.layout}>
+            <div className={styles.sidebar}>
+              <SidebarShortcuts />
+            </div>
+            <div className={styles.content}>
+              <div className={styles.grid}>{panes}</div>
+            </div>
+          </div>
         </div>
       </Fragment>
     );

@@ -65,6 +65,12 @@ class ToolbarAreaPane extends PureComponent {
     this.state = {
       ...this.initialState,
     };
+    
+    // Navigation history for forward/back functionality
+    this.navigationHistory = {
+      [DEVICE_TYPE.local]: [],
+      [DEVICE_TYPE.mtp]: [],
+    };
   }
 
   componentWillMount() {
@@ -246,11 +252,32 @@ class ToolbarAreaPane extends PureComponent {
 
     switch (itemType) {
       case 'up':
-        filePath = pathUp(currentBrowsePath[deviceType]);
+        // Track current path before going up (this becomes the "forward" destination)
+        const currentPath = currentBrowsePath[deviceType];
+        filePath = pathUp(currentPath);
+        
+        // Add current path to forward history stack
+        this.navigationHistory[deviceType].push(currentPath);
+        
+        console.log('Up navigation - added to forward history:', { 
+          currentPath, 
+          forwardHistory: this.navigationHistory[deviceType]
+        });
+        
         this._handleListDirectory({ filePath, deviceType });
 
         analyticsService.sendEvent(
           EVENT_TYPE[`${deviceTypeUpperCase}_${actionOrigin}_FOLDER_UP`],
+          {}
+        );
+
+        break;
+
+      case 'forward':
+        this._handleForwardNavigation({ deviceType });
+
+        analyticsService.sendEvent(
+          EVENT_TYPE[`${deviceTypeUpperCase}_${actionOrigin}_FOLDER_FORWARD`],
           {}
         );
 
@@ -355,6 +382,24 @@ class ToolbarAreaPane extends PureComponent {
     }
   };
 
+  _handleForwardNavigation = ({ deviceType }) => {
+    const history = this.navigationHistory[deviceType];
+    
+    console.log('Forward navigation attempt:', { history, canGoForward: history.length > 0 });
+    
+    if (history.length > 0) {
+      // Pop the last path from history and navigate to it
+      const forwardPath = history.pop();
+      console.log('Going forward to:', forwardPath);
+      this._handleListDirectory({ 
+        filePath: forwardPath, 
+        deviceType
+      });
+    } else {
+      console.log('Cannot go forward - no forward history available');
+    }
+  };
+
   _handleDelFiles = ({ deviceType }) => {
     const {
       directoryLists,
@@ -423,6 +468,7 @@ class ToolbarAreaPane extends PureComponent {
           showLocalPaneOnLeftSide={showLocalPaneOnLeftSide}
           mtpMode={mtpMode}
           fileExplorerListingType={fileExplorerListingType}
+          navigationHistory={this.navigationHistory}
           onDeleteConfirmDialog={this._handleDeleteConfirmDialog}
           onMtpStoragesListClick={this._handleMtpStoragesListClick}
           onMtpModeSelectionDialogClick={

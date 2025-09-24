@@ -22,25 +22,34 @@ class Titlebar extends PureComponent {
         className={styles.root}
         id={APP_TITLEBAR_DOM_ID}
       >
-        {/* Only show the device info. on the main window */}
-        {windowHash !== '/' ? null : mtpDevice?.isAvailable &&
+        {/* Left: space for navigation buttons or view options (Finder-like) */}
+        <div className={styles.left} />
+
+        {/* Center: device info / title */}
+        <div className={styles.center}>
+          {/* Only show the device info. on the main window */}
+          {windowHash !== '/' ? null : mtpDevice?.isAvailable &&
           mtpDevice?.info?.mtpDeviceInfo &&
           !isEmpty(selectedStorage?.data?.info) ? (
-          <span className={styles.deviceInfo}>
-            <span className={styles.deviceModel}>
-              {`${mtpDevice?.info?.mtpDeviceInfo?.Model} (${selectedStorage?.data?.name}) - `}
+            <span className={styles.deviceInfo}>
+              <span className={styles.deviceModel}>
+                {`${mtpDevice?.info?.mtpDeviceInfo?.Model} (${selectedStorage?.data?.name}) - `}
+              </span>
+              {`${niceBytes(
+                parseInt(selectedStorage?.data.info?.FreeSpaceInBytes ?? 0, 10)
+              )} Free of ${niceBytes(
+                parseInt(selectedStorage?.data.info?.MaxCapability ?? 0, 10)
+              )}, ${capitalize(mtpMode)} Mode`}
             </span>
-            {`${niceBytes(
-              parseInt(selectedStorage?.data.info?.FreeSpaceInBytes ?? 0, 10)
-            )} Free of ${niceBytes(
-              parseInt(selectedStorage?.data.info?.MaxCapability ?? 0, 10)
-            )}, ${capitalize(mtpMode)} Mode`}
-          </span>
-        ) : (
-          <span className={styles.deviceInfo}>
-            {`${capitalize(mtpMode)} Mode`}
-          </span>
-        )}
+          ) : (
+            <span className={styles.deviceInfo}>
+              {`${capitalize(mtpMode)} Mode`}
+            </span>
+          )}
+        </div>
+
+        {/* Right: reserved for actions/search */}
+        <div className={styles.right} />
       </div>
     );
   }

@@ -35,6 +35,7 @@ export default class ToolbarAreaPane extends PureComponent {
       mtpDevice,
       mtpMode,
       fileExplorerListingType,
+      navigationHistory,
     } = args;
 
     const _directoryLists = directoryLists[deviceType];
@@ -56,6 +57,20 @@ export default class ToolbarAreaPane extends PureComponent {
           _activeToolbarList[a] = {
             ...item,
             enabled: _currentBrowsePath !== '/' && enabled,
+          };
+          break;
+
+        case 'forward':
+          const canGoForward = navigationHistory && navigationHistory[deviceType] && 
+            navigationHistory[deviceType].length > 0;
+          console.log('Forward button state:', { 
+            navigationHistory: navigationHistory?.[deviceType], 
+            canGoForward, 
+            enabled 
+          });
+          _activeToolbarList[a] = {
+            ...item,
+            enabled: canGoForward && enabled,
           };
           break;
 
@@ -149,6 +164,7 @@ export default class ToolbarAreaPane extends PureComponent {
       showLocalPaneOnLeftSide,
       mtpMode,
       fileExplorerListingType,
+      navigationHistory,
     } = this.props;
 
     const _toolbarList = this.activeToolbarList({
@@ -160,6 +176,7 @@ export default class ToolbarAreaPane extends PureComponent {
       mtpDevice,
       mtpMode,
       fileExplorerListingType,
+      navigationHistory,
     });
 
     const RenderLazyLoaderOverlay = LazyLoaderOverlay({ appThemeMode });
@@ -265,41 +282,57 @@ export default class ToolbarAreaPane extends PureComponent {
             )}
 
             <div className={styles.toolbarInnerWrapper}>
-              {Object.keys(_toolbarList).map((a) => {
+              {Object.keys(_toolbarList).map((a, index) => {
                 const item = _toolbarList[a];
+                const isForwardButton = a === 'forward';
 
                 return (
-                  <Tooltip key={a} title={item.label}>
-                    <div className={`${styles.navBtns} ${styles.noAppDrag}`}>
-                      <IconButton
-                        aria-label={item.label}
-                        disabled={!item.enabled}
-                        onClick={() => onToolbarAction(a)}
-                        className={classNames({
-                          [styles.disabledNavBtns]: !item.enabled,
-                          [styles.invertedNavBtns]: item.invert,
-                          [styles.imageBtn]: item.image,
-                          [styles.activeNavBtns]: item.active,
-                        })}
-                      >
-                        {item.image && (
-                          <img
-                            alt={item.label}
-                            src={imgsrc(item.image, false)}
-                            className={styles.navBtnImages}
-                          />
-                        )}
+                  <React.Fragment key={a}>
+                    <Tooltip title={item.label}>
+                      <div className={`${styles.navBtns} ${styles.noAppDrag}`}>
+                        <IconButton
+                          aria-label={item.label}
+                          disabled={!item.enabled}
+                          onClick={() => onToolbarAction(a)}
+                          className={classNames({
+                            [styles.disabledNavBtns]: !item.enabled,
+                            [styles.invertedNavBtns]: item.invert,
+                            [styles.imageBtn]: item.image,
+                            [styles.activeNavBtns]: item.active,
+                          })}
+                        >
+                          {item.image && (
+                            <img
+                              alt={item.label}
+                              src={imgsrc(item.image, false)}
+                              className={styles.navBtnImages}
+                            />
+                          )}
 
-                        {item.icon && (
-                          <FontAwesomeIcon
-                            icon={item.icon}
-                            className={styles.navBtnIcons}
-                            title={item.label}
-                          />
-                        )}
-                      </IconButton>
-                    </div>
-                  </Tooltip>
+                          {item.icon && (
+                            <FontAwesomeIcon
+                              icon={item.icon}
+                              className={styles.navBtnIcons}
+                              title={item.label}
+                            />
+                          )}
+                        </IconButton>
+                      </div>
+                    </Tooltip>
+                    
+                    {isForwardButton && (
+                      <div className={styles.folderNameWrapper}>
+                        <span className={styles.folderName}>
+                          {(() => {
+                            const path = currentBrowsePath[deviceType];
+                            if (path === '/') return deviceType === DEVICE_TYPE.local ? 'Computer' : 'Device';
+                            const pathParts = path.split('/').filter(part => part.length > 0);
+                            return pathParts.length > 0 ? pathParts[pathParts.length - 1] : 'Root';
+                          })()}
+                        </span>
+                      </div>
+                    )}
+                  </React.Fragment>
                 );
               })}
             </div>

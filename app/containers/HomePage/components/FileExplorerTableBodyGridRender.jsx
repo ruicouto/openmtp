@@ -95,6 +95,7 @@ class FileExplorerTableBodyGridRender extends PureComponent {
         className={classNames(styles.itemWrapper, {
           [styles.itemSelected]: isSelected,
         })}
+        onClick={(event) => onTableClick(item.path, deviceType, event, true, true)}
         onDoubleClick={(event) => onTableDoubleClick(item, deviceType, event)}
         onContextMenu={(event) =>
           onContextMenuClick(event, { ...item }, { ...tableData }, _eventTarget)
@@ -105,40 +106,36 @@ class FileExplorerTableBodyGridRender extends PureComponent {
           }
         }}
       >
-        <label>
-          <Checkbox
-            className={styles.itemCheckBox}
-            checked={isSelected}
-            onClick={(event) =>
-              onTableClick(item.path, deviceType, event, true, true)
+        <Checkbox
+          className={styles.itemCheckBox}
+          checked={isSelected}
+          tabIndex={-1}
+        />
+        {item.isFolder ? <RenderFolderIcon /> : <RenderFileIcon />}
+        <div className={styles.itemFileNameWrapper}>
+          <Typography
+            variant="caption"
+            className={styles.itemFileName}
+            onContextMenu={(event) =>
+              onContextMenuClick(
+                event,
+                { ...item },
+                { ...tableData },
+                _eventTarget
+              )
             }
-          />
-          {item.isFolder ? <RenderFolderIcon /> : <RenderFileIcon />}
-          <div className={styles.itemFileNameWrapper}>
-            <Typography
-              variant="caption"
-              className={styles.itemFileName}
-              onContextMenu={(event) =>
-                onContextMenuClick(
-                  event,
-                  { ...item },
-                  { ...tableData },
-                  _eventTarget
-                )
-              }
-            >
-              {fileName.isTruncated ? (
-                <Tooltip title={fileName.text}>
-                  <div className={styles.truncate}>
-                    {fileName.truncatedText}
-                  </div>
-                </Tooltip>
-              ) : (
-                fileName.text
-              )}
-            </Typography>
-          </div>
-        </label>
+          >
+            {fileName.isTruncated ? (
+              <Tooltip title={fileName.text} placement="bottom">
+                <div className={styles.truncate}>
+                  {fileName.truncatedText}
+                </div>
+              </Tooltip>
+            ) : (
+              fileName.text
+            )}
+          </Typography>
+        </div>
       </div>
     );
   }

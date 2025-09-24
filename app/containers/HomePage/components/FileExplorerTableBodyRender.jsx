@@ -79,15 +79,17 @@ class FileExplorerTableBodyRender extends PureComponent {
 
     return (
       <Table className={styles.table}>
-        <FileExplorerTableHeadRender
-          numSelected={selected.length}
-          order={order}
-          orderBy={orderBy}
-          onSelectAllClick={onSelectAllClick.bind(this, deviceType)}
-          onRequestSort={onRequestSort.bind(this, deviceType)}
-          rowCount={nodes ? nodes.length : 0}
-          hideColList={hideColList}
-        />
+        {fileExplorerListingType[deviceType] === FILE_EXPLORER_VIEW_TYPE.list && (
+          <FileExplorerTableHeadRender
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={onSelectAllClick.bind(this, deviceType)}
+            onRequestSort={onRequestSort.bind(this, deviceType)}
+            rowCount={nodes ? nodes.length : 0}
+            hideColList={hideColList}
+          />
+        )}
         <TableBody
           draggable={onIsDraggable(deviceType)}
           onDragStart={(event) => {

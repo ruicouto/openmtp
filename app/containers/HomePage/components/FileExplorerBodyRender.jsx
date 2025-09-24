@@ -16,6 +16,9 @@ import { FILE_EXPLORER_DEFAULT_FOCUSSED_DEVICE_TYPE } from '../../../constants';
 import { FILE_EXPLORER_BODY_WRAPPER_ID } from '../../../constants/dom';
 import { DEVICE_TYPE } from '../../../enums';
 
+// Shared scroll position storage across all FileExplorerBodyRender instances
+const globalScrollPositions = new Map();
+
 class FileExplorerBodyRender extends PureComponent {
   constructor(props) {
     super(props);
@@ -26,6 +29,9 @@ class FileExplorerBodyRender extends PureComponent {
       FILE_EXPLORER_DEFAULT_FOCUSSED_DEVICE_TYPE;
     this.fileExplorerBodyWrapperId = `${FILE_EXPLORER_BODY_WRAPPER_ID}-${deviceType}`;
     this.acceleratorIgnoreList = ['multipleSelectClick'];
+    
+    // Scroll position restoration
+    this.currentPath = null;
   }
 
   componentDidMount() {
@@ -35,9 +41,65 @@ class FileExplorerBodyRender extends PureComponent {
     this.fileExplorerBodyWrapper = document.getElementById(
       this.fileExplorerBodyWrapperId
     );
+    
+    // Initialize current path for scroll position tracking
+    const { deviceType, currentBrowsePath } = this.props;
+    this.currentPath = currentBrowsePath[deviceType];
+    
+    // Add scroll event listener to continuously save scroll position
+    if (this.fileExplorerBodyWrapper) {
+      this.handleScroll = () => {
+        if (this.currentPath) {
+          this.saveScrollPosition(deviceType, this.currentPath);
+        }
+      };
+      this.fileExplorerBodyWrapper.addEventListener('scroll', this.handleScroll);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { deviceType, currentBrowsePath, directoryLists } = this.props;
+    const currentPath = currentBrowsePath[deviceType];
+    const prevPath = prevProps.currentBrowsePath[deviceType];
+    
+    // If path changed, save previous scroll position and restore new one
+    if (currentPath !== prevPath) {
+      // Save scroll position for the previous path
+      if (this.currentPath && this.fileExplorerBodyWrapper) {
+        this.saveScrollPosition(deviceType, this.currentPath);
+      }
+      
+      // Update current path
+      this.currentPath = currentPath;
+      
+      // Restore scroll position for the new path (after a short delay to ensure content is rendered)
+      setTimeout(() => {
+        this.restoreScrollPosition(deviceType, currentPath);
+      }, 100);
+    }
+    
+    // If directory content changed (but path is the same), also try to restore scroll position
+    const prevNodes = prevProps.directoryLists[deviceType].nodes;
+    const currentNodes = directoryLists[deviceType].nodes;
+    if (prevNodes !== currentNodes && prevPath === currentPath) {
+      setTimeout(() => {
+        this.restoreScrollPosition(deviceType, currentPath);
+      }, 100);
+    }
   }
 
   componentWillUnmount() {
+    // Save scroll position before unmounting
+    const { deviceType } = this.props;
+    if (this.currentPath && this.fileExplorerBodyWrapper) {
+      this.saveScrollPosition(deviceType, this.currentPath);
+    }
+    
+    // Remove scroll event listener
+    if (this.fileExplorerBodyWrapper && this.handleScroll) {
+      this.fileExplorerBodyWrapper.removeEventListener('scroll', this.handleScroll);
+    }
+    
     hotkeys.unbind(this.fileExplorerKeymapString);
   }
 
@@ -46,6 +108,27 @@ class FileExplorerBodyRender extends PureComponent {
 
     if (FILE_EXPLORER_DEFAULT_FOCUSSED_DEVICE_TYPE === deviceType) {
       document.getElementById(this.fileExplorerBodyWrapperId).focus();
+    }
+  };
+
+  saveScrollPosition = (deviceType, path) => {
+    if (this.fileExplorerBodyWrapper && path) {
+      const key = `${deviceType}:${path}`;
+      globalScrollPositions.set(key, {
+        scrollTop: this.fileExplorerBodyWrapper.scrollTop,
+        scrollLeft: this.fileExplorerBodyWrapper.scrollLeft,
+      });
+    }
+  };
+
+  restoreScrollPosition = (deviceType, path) => {
+    if (this.fileExplorerBodyWrapper && path) {
+      const key = `${deviceType}:${path}`;
+      if (globalScrollPositions.has(key)) {
+        const position = globalScrollPositions.get(key);
+        this.fileExplorerBodyWrapper.scrollTop = position.scrollTop;
+        this.fileExplorerBodyWrapper.scrollLeft = position.scrollLeft;
+      }
     }
   };
 

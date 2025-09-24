@@ -14,41 +14,44 @@ export const styles = (theme) => {
 };
 
 export const getColorPalette = () => {
-  const lightPrimaryColor = '#fff';
-  const lightSecondaryColor = '#007af5';
+  // macOS Finder-inspired colors
+  const lightPrimaryColor = '#ffffff';
+  const lightSecondaryColor = '#007AFF'; // macOS system blue
+  const finderSidebarColor = '#f7f7f7';
+  const finderHeaderColor = '#f0f0f0';
 
-  const darkPrimaryColor = '#242424';
-  const darkSecondaryColor = '#007af5';
+  const darkPrimaryColor = '#1e1e1e'; // macOS dark mode background
+  const darkSecondaryColor = '#0A84FF'; // macOS dark mode blue
 
-  const snackbarError = `#f33950`;
+  const snackbarError = `#ff3b30`; // macOS system red
 
   return {
     get light() {
       return {
         primary: {
           main: lightPrimaryColor,
-          contrastText: '#000',
+          contrastText: '#1d1d1f', // macOS text color
         },
         secondary: {
           main: lightSecondaryColor,
           contrastText: '#fff',
         },
         background: {
-          default: darkPrimaryColor,
+          default: '#f5f5f7', // macOS light background
           paper: lightPrimaryColor,
         },
         snackbar: {
           error: snackbarError,
         },
-        btnTextColor: '#fff',
-        fileColor: '#000',
-        tableHeaderFooterBgColor: `#fbfbfb`,
-        lightText1Color: `rgba(0, 0, 0, 0.50)`,
-        fileExplorerThinLineDividerColor: `rgba(0, 0, 0, 0.12)`,
-        fileDrop: `rgba(0, 122, 245, 0.08)`,
-        disabledBgColor: `#f3f3f3`,
-        nativeSystemColor: `#ececec`,
-        contrastPrimaryMainColor: darkPrimaryColor,
+        btnTextColor: '#1d1d1f',
+        fileColor: '#1d1d1f',
+        tableHeaderFooterBgColor: finderHeaderColor,
+        lightText1Color: `rgba(29, 29, 31, 0.68)`, // macOS secondary text
+        fileExplorerThinLineDividerColor: `rgba(0, 0, 0, 0.08)`, // lighter dividers
+        fileDrop: `rgba(0, 122, 255, 0.1)`,
+        disabledBgColor: `#f2f2f7`,
+        nativeSystemColor: finderSidebarColor,
+        contrastPrimaryMainColor: '#1d1d1f',
       };
     },
     get dark() {

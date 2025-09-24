@@ -1,3 +1,8 @@
 export const styles = (_) => ({
-  table: {},
+  table: {
+    backgroundColor: '#ffffff',
+    '& .MuiTableBody-root': {
+      backgroundColor: '#ffffff',
+    },
+  },
 });

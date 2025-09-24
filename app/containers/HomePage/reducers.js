@@ -5,6 +5,9 @@ import {
   faCog,
   faPlug,
   faArrowLeft,
+  faArrowRight,
+  faChevronLeft,
+  faChevronRight,
   faQuestionCircle,
   faList,
   faTh,
@@ -71,7 +74,12 @@ export const initialState = {
       up: {
         enabled: true,
         label: 'Folder Up',
-        icon: faArrowLeft,
+        icon: faChevronLeft,
+      },
+      forward: {
+        enabled: false,
+        label: 'Forward',
+        icon: faChevronRight,
       },
       refresh: {
         enabled: true,
@@ -113,7 +121,12 @@ export const initialState = {
       up: {
         enabled: true,
         label: 'Folder Up',
-        icon: faArrowLeft,
+        icon: faChevronLeft,
+      },
+      forward: {
+        enabled: false,
+        label: 'Forward',
+        icon: faChevronRight,
       },
       refresh: {
         enabled: true,
